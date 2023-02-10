@@ -10,6 +10,7 @@ public class PlayerCam : MonoBehaviour
     private float mouseX = 0;
     private float mouseY = 0;
     private float xRotation = 0, yRotation = 0;
+    Quaternion cameraDirection;
 
     void Start()
     {
@@ -29,6 +30,7 @@ public class PlayerCam : MonoBehaviour
         xRotation -= mouseY;
         transform.rotation = Quaternion.Euler(xRotation, yRotation, 0f);
         player.transform.rotation = Quaternion.Euler(0f,yRotation,0f);
+        
 
         
 

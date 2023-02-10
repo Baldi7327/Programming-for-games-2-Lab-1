@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
-
+    //player movement
     [SerializeField] private float speed;
     [SerializeField] private float jumpForce;
     private float horzIn, vertIn;
@@ -13,10 +13,20 @@ public class Player : MonoBehaviour
     private bool jump = false;
     private bool grounded = true;
 
+    //bullet stuff
+    [SerializeField] private float bulletSpeed;
+    private GameObject bulletSpawn;
+    [SerializeField] private GameObject bullet;
+    [SerializeField] private Transform bulletPos;
+    private Quaternion playerLook;
+    private PlayerCam playerCam; 
+    private bool shoot = false;
+
+
     // Start is called before the first frame update
     void Start()
     {
-
+        playerCam = FindObjectOfType<PlayerCam>();
         move = GetComponent<Movement>();
         rb = GetComponent<Rigidbody>();
 
@@ -37,6 +47,10 @@ public class Player : MonoBehaviour
             grounded = false;
         }
 
+        if (Input.GetKey(KeyCode.Mouse0))
+        {
+            shoot = true;
+        }
     }
 
     private void FixedUpdate()
@@ -44,6 +58,11 @@ public class Player : MonoBehaviour
 
         rb.AddForce((transform.forward * vertIn + transform.right * horzIn) * speed * 10f);
         
+        if (shoot == true)
+        {
+            Shoot();
+            shoot = false;
+        }
     }
 
     private void OnCollisionEnter(Collision collision)
@@ -54,5 +73,12 @@ public class Player : MonoBehaviour
     private void OnCollisionStay(Collision collision)
     {
         if (collision.gameObject.layer == 6) grounded = true;
+    }
+
+    private void Shoot()
+    {
+        GameObject bulletSpawn = Instantiate(bullet, bulletPos.transform.position, Quaternion.identity);
+        bulletSpawn.GetComponent<Rigidbody>().velocity = playerCam.transform.forward * bulletSpeed;
+        Destroy(bulletSpawn,3);
     }
 }
