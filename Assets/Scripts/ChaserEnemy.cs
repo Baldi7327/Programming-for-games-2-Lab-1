@@ -7,11 +7,13 @@ public class ChaserEnemy : Enemy
     private Rigidbody rb;
     [SerializeField] private float chaserSpeed;
     private Player player;
+    static Transform playerPos;
     // Start is called before the first frame update
     void Start()
     {
         rb = GetComponent<Rigidbody>();
         player = FindObjectOfType<Player>();
+        
     }
 
     // Update is called once per frame
@@ -22,7 +24,8 @@ public class ChaserEnemy : Enemy
 
     private void FixedUpdate()
     {
-        rb.AddForce((player.transform.position - transform.position).normalized * chaserSpeed * 10f);
+        playerPos = player.transform;
+        rb.AddForce((playerPos.position - transform.position).normalized * chaserSpeed * 10f);
 
 
     }

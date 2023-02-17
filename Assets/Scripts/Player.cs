@@ -22,6 +22,8 @@ public class Player : MonoBehaviour
     private PlayerCam playerCam; 
     private bool shoot = false;
 
+    private RaycastHit ray;
+
 
     // Start is called before the first frame update
     void Start()
@@ -78,7 +80,9 @@ public class Player : MonoBehaviour
     private void Shoot()
     {
         GameObject bulletSpawn = Instantiate(bullet, bulletPos.transform.position, Quaternion.identity);
-        bulletSpawn.GetComponent<Rigidbody>().velocity = playerCam.transform.forward * bulletSpeed;
-        Destroy(bulletSpawn,3);
+        Vector3 direction = playerCam.transform.forward;
+        if (Physics.Raycast(playerCam.transform.position, playerCam.transform.forward, out ray, 20f)) direction = (ray.point - playerCam.transform.position).normalized;
+        bulletSpawn.GetComponent<Rigidbody>().velocity =  direction * bulletSpeed;
+        Destroy(bulletSpawn,2);
     }
 }

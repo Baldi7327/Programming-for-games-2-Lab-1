@@ -28,6 +28,13 @@ public class PlayerCam : MonoBehaviour
         mouseY = Input.GetAxisRaw("Mouse Y") * Sensetivity * Time.deltaTime;
         yRotation += mouseX;
         xRotation -= mouseY;
+        if (xRotation < -90f)
+        {
+            xRotation = -90f;
+        }else if (xRotation > 90f)
+        {
+            xRotation = 90f;
+        }
         transform.rotation = Quaternion.Euler(xRotation, yRotation, 0f);
         player.transform.rotation = Quaternion.Euler(0f,yRotation,0f);
         
