@@ -7,10 +7,12 @@ public class Enemy : MonoBehaviour
 
     [SerializeField] private float health;
     private float currentHealth;
+    public MainHub Hub;
 
     void Start()
     {
         currentHealth = health;
+        Hub = FindObjectOfType<MainHub>();
     }
 
     public void TakeDamage(float d)
@@ -35,6 +37,15 @@ public class Enemy : MonoBehaviour
 
     private void Death()
     {
-        Destroy(gameObject);
+        Hub.Points ++;
+        gameObject.SetActive(false);
+
     }
+
+    public float hp
+    {
+        get { return currentHealth; }
+        set { currentHealth = value; }
+    }
+
 }

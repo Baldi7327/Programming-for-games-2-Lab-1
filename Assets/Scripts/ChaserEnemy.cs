@@ -13,7 +13,8 @@ public class ChaserEnemy : Enemy
     {
         rb = GetComponent<Rigidbody>();
         player = FindObjectOfType<Player>();
-        
+        Hub = FindObjectOfType<MainHub>();
+
     }
 
     // Update is called once per frame
