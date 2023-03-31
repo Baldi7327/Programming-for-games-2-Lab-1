@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
+using System.Text;
 
 public class SaveScript : MonoBehaviour
 {
@@ -22,7 +23,9 @@ public class SaveScript : MonoBehaviour
     public List<string> enemyActiveOut =  new List<string>();
     private MainHub Hub;
     public string scoreOut;
-
+    private string key = "cheeseBurger";
+    string fileName = "output.json";
+    string filePath;
 
     private void Start()
     {
@@ -33,14 +36,11 @@ public class SaveScript : MonoBehaviour
         enemyActive = new string[enemies.Length];
         cam = FindObjectOfType<PlayerCam>();
         Hub = FindObjectOfType<MainHub>();
+        filePath = Path.Combine(Application.dataPath, fileName);
     }
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.C))
-        {
-            ClearJsonFile();
-        }
         if (Input.GetKeyDown(KeyCode.P))
         {
             ClearJsonFile();
@@ -65,6 +65,7 @@ public class SaveScript : MonoBehaviour
             WriteToJson(ppos);
             WriteToJson(camforward);
             WriteToJson(currentScore);
+            EncryptFile();
         }
 
         if (Input.GetKeyDown(KeyCode.L))
@@ -75,8 +76,6 @@ public class SaveScript : MonoBehaviour
 
     private void WriteToJson(string jsonString)
     {
-        string fileName = "output.json";
-        string filePath = Path.Combine(Application.dataPath, fileName);
 
         // Check if the file exists, if not, create it
         if (!File.Exists(filePath))
@@ -87,7 +86,22 @@ public class SaveScript : MonoBehaviour
         // Write the jsonString to the file using StreamWriter
         using (StreamWriter streamWriter = new StreamWriter(filePath, true))
         {
+            
             streamWriter.WriteLine(jsonString);
+        }
+    }
+
+    private void EncryptFile()
+    {
+        if (File.Exists(filePath))
+        {
+            string fileContent = File.ReadAllText(filePath);
+            string encryptedContent = ApplyXORCipher(fileContent, key);
+            File.WriteAllText(filePath, encryptedContent);
+        }
+        else
+        {
+            Debug.Log("Error, file not found");
         }
     }
 
@@ -95,8 +109,6 @@ public class SaveScript : MonoBehaviour
 
     public void ReadFromFile()
     {
-        string fileName = "output.json";
-        string filePath = Path.Combine(Application.dataPath, fileName);
 
         if (File.Exists(filePath))
         {
@@ -140,6 +152,7 @@ public class SaveScript : MonoBehaviour
 
     private void Load()
     {
+        EncryptFile();
         ReadFromFile();
         string[] loadedPlayerPos = pposOut.Split(',');
         player.transform.position = new Vector3(float.Parse(loadedPlayerPos[0]),float.Parse(loadedPlayerPos[1]),float.Parse(loadedPlayerPos[2]));
@@ -184,4 +197,19 @@ public class SaveScript : MonoBehaviour
             Debug.LogError("File not found: " + filePath);
         }
     }
+
+    private string ApplyXORCipher(string input, string key)
+    {
+        StringBuilder result = new StringBuilder();
+        int keyIndex = 0;
+
+        foreach (char c in input)
+        {
+            result.Append((char)(c ^ key[keyIndex]));
+            keyIndex = (keyIndex + 1) % key.Length;
+        }
+
+        return result.ToString();
+    }
+
 }
